@@ -1,0 +1,37 @@
+How to Set Up E-Chain Animation
+
+Requirements:
+#2 Meshes to input into Geometry Nodes of Controller object. (Will work with one mesh, just plug it into both inner and outer inputs)
+#Imported meshes should be STL files and a single body. OBJ's messed this up on first round. 
+#Know the distance between chain link pivot points. (Hinge distance)
+
+Tips:
+#Any elements in the chain that remain static shouldn't be a part of the Spline IK chain. Can cut Spline IK early, doesn't have to be the tip.
+
+Step 1: Instance Straight E-Chain
+#Manually adjust length of EChain_Loop_Path to the overall length of desired chain by grabbing endpoint and translating.
+#If the automatic length truncate logic isnt set up in the geometry nodes for EChain_Controller...
+#Eyeball the EChain_Loop_Path length with Test Cube Inner and Test Cube Outer. Instance with these meshes to get correct spacing between links because the geonodes will auto stretch beyond hinge distance.
+#Test cube widths should match hinge distance
+
+Step 2: Generate Bones
+#After setting up the E-Chain layout, run bone-rigger.py
+#Consider where you want to have Spline IK begin (determine when you want rope behavior to end)
+#Consider bone rotation constraints (default is +/-20 deg)
+
+Step 3: Separate Meshes
+#Apply the Geometry Nodes modifier on the controller object. (Make sure that spares has an object with unchanged geonodes tree)
+#After a single real mesh has been made. Select it > Edit mode > Separate by loose parts. 
+#You should now have individual meshes along the entire chain. But their naming and outline positioning don't reflect the alternating order of the arrangement.
+
+
+Step 4: Reset Origins and Parent Bones
+#Run origin-reset.py (I believe this resets origins based off the hinge distance, it's hardcoded so adjust in the script itself.)
+#Run rename-mesh.py
+#Run parent-to-bones.py.
+#Everything should be separated with the proper parenting.
+
+Step 5: Posing and animating
+#Deform the control points of the EChain_Loop_Path. This is how you model how you want the curve to bend, where, etc. You will need to subdivide the curve as much as necessary. 
+#Generate hooks at every NURBS control point that influences the bend. Parent each hook's empty to a central controller empty. 
+#Keyframe the master controller empty and that should animate the curve and the rest of the moving chain along with it. 
